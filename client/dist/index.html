@@ -122,7 +122,8 @@ body {
   color: 'lime';
 }
 
-p {
+p, a {
+  text-align: center;
   color: #fff;
 }
 
@@ -130,7 +131,7 @@ p {
 
 <div id="app">
   <p>Example for changing Gather objects and impassable tiles via api. When the door opens, you have 5 seconds, so hurry up!</p>
-  <p>Code: </p>
+  <p>Code: <a href="https://github.com/silvester-pari/gather-api">https://github.com/silvester-pari/gather-api</a></p>
   <div class="digits">
     <div class="message">{{ message }}</div>
     <template v-if="!success">
