@@ -1,0 +1,209 @@
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #004170;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+}
+
+body {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+      -ms-flex-wrap: wrap;
+          flex-wrap: wrap;
+  -webkit-justify-content: space-around;
+      -ms-flex-pack: distribute;
+          justify-content: space-around;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-align-content: center;
+      -ms-flex-line-pack: center;
+          align-content: center;
+}
+.btn {
+  box-sizing: border-box;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-color: transparent;
+  border: 2px solid #e74c3c;
+  border-radius: 0.6em;
+  color: #e74c3c;
+  cursor: pointer;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-self: center;
+      -ms-flex-item-align: center;
+          align-self: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+  margin: 20px;
+  padding: 2.8em 2.8em;
+  text-decoration: none;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}
+.btn:hover, .btn:focus {
+  color: #fff;
+  outline: 0;
+}
+
+.message {
+  color: #fff;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-align-self: center;
+      -ms-flex-item-align: center;
+          align-self: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1;
+  margin: 20px;
+  padding: 1.2em 2.8em;
+  text-decoration: none;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+}
+
+.btn {
+  border-color: #fff;
+  color: #fff;
+  background-image: -webkit-linear-gradient(45deg, #fff 50%, transparent 50%);
+  background-image: linear-gradient(45deg, #fff 50%, transparent 50%);
+  background-position: 100%;
+  background-size: 400%;
+  -webkit-transition: background 300ms ease-in-out;
+  transition: background 300ms ease-in-out;
+}
+.btn:hover {
+  background-position: 0;
+  color: #004170;
+}
+
+.digits {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-template-areas:
+    "message message message"
+    ". . ."
+    ". . ."
+    ". . ."
+    "cancel . submit";
+}
+
+.message { grid-area: message; }
+.cancel {
+  grid-area: cancel;
+  color: 'indianred';
+}
+.submit {
+  grid-area: submit;
+  color: 'lime';
+}
+
+p {
+  color: #fff;
+}
+
+</style>
+
+<div id="app">
+  <p>Example for changing Gather objects and impassable tiles via api. When the door opens, you have 5 seconds, so hurry up!</p>
+  <p>Code: </p>
+  <div class="digits">
+    <div class="message">{{ message }}</div>
+    <template v-if="!success">
+      <button class="btn digit" @click="addDigit(1)">1</button>
+      <button class="btn digit" @click="addDigit(2)">2</button>
+      <button class="btn digit" @click="addDigit(3)">3</button>
+      <button class="btn digit" @click="addDigit(4)">4</button>
+      <button class="btn digit" @click="addDigit(5)">5</button>
+      <button class="btn digit" @click="addDigit(6)">6</button>
+      <button class="btn digit" @click="addDigit(7)">7</button>
+      <button class="btn digit" @click="addDigit(8)">8</button>
+      <button class="btn digit" @click="addDigit(9)">9</button>
+      <button class="btn digit" @click="addDigit(0)">0</button>
+      <button class="btn cancel" @click="cancel">x</button>
+      <button class="btn submit" @click="checkPwd">Submit</button>
+    </template>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="./hint.js"></script>
+<script>
+var app = new Vue({
+  el: '#app',
+  data: {
+    error: '',
+    success: '',
+    password: '',
+  },
+  computed: {
+    message() {
+      let message = this.password;
+      if (this.password.length === 0) {
+        message = `Enter password (Hint: ${passwordHint})`;
+      }
+      if (this.error) {
+        message = this.error;
+      }
+      if (this.success) {
+        message = this.success;
+      }
+      return message;
+    },
+  },
+  methods: {
+    addDigit(digit) {
+      this.error = '';
+      this.success = '';
+      if (this.password.length < 5) {
+        this.password = this.password.toString() + digit;
+      }
+    },
+    cancel() {
+      this.error = '';
+      this.success = '';
+      this.password = '';
+    },
+    async checkPwd() {
+      this.error = '';
+      this.success = '';
+
+      const response = await axios.post('https://zerfyo6lf3.execute-api.eu-central-1.amazonaws.com/dev/submit-pwd', {
+        password: this.password,
+      })
+      .catch((error) => {
+        this.error = error.response ? error.response.data.message : 'Access Error';
+        this.password = '';
+      });
+      if (response.status === 200) {
+        this.success = response.data.message;
+      }
+    }
+  }
+})
+</script>

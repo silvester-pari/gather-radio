@@ -1,0 +1,31 @@
+service: gather-api
+
+frameworkVersion: ">=1.1.0 <=2.20.1"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-central-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "*"
+
+functions:
+  submitPassword:
+    handler: handler.submit_password
+    events:
+      - http:
+          path: submit-pwd
+          method: post
+          cors: true
+  closeDoor:
+    handler: handler.close_door
+
+plugins:
+  - serverless-finch
+
+custom:
+  client:
+    bucketName: gather-test
