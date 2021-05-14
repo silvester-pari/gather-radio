@@ -2,7 +2,7 @@
 
 Based on https://github.com/gathertown/door-by-api
 
-## Setup
+## Deployment Setup
 
 ```bash
 npm install -g serverless
@@ -11,7 +11,7 @@ npm install -g serverless
 ## Invoke the function locally
 
 ```bash
-serverless invoke local --function currentTime
+serverless invoke local --function change_station
 ```
 
 ## Deploy
@@ -33,21 +33,17 @@ You need to set a `config.js` in the root folder:
 module.exports = {
   ROOM_ID: 'space\\id',
   MAP_ID: 'room-name',
-  API_KEY: 'api-key',
-  DOOR_IMAGES: {
-    open: 'open-url',
-    closed: 'close-url',
-    closed_highlight: 'close-highlight-url',
-  },
-  DOOR_POS: {
-    x: x-pos,
-    y: y-pos
-  },
-  PASSWORD: 'password',
+  API_KEY: 'api-key'
 };
 ```
-...and a `hint.js` in client/dist:
+...and a `api.js` in client/dist:
 
 ```bash
-const passwordHint = '12345';
+const apiDeployment = 'https://path/to/your/deployed/api/endpoint';
+```
+
+## Gather setup
+Create a jukebox with an embedded website. Use your s3 deployment url and add an unique id after the link to help referencing the correct Jukebox:
+```
+https://<bucket-name>.s3.eu-central-1.amazonaws.com/index.html?id=<unique id>
 ```

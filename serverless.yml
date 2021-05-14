@@ -1,6 +1,6 @@
-service: gather-api
+service: gather-radio
 
-frameworkVersion: ">=1.1.0 <=2.20.1"
+frameworkVersion: ">=1.1.0 <=2.41.2"
 
 provider:
   name: aws
@@ -13,19 +13,17 @@ provider:
       Resource: "*"
 
 functions:
-  submitPassword:
-    handler: handler.submit_password
+  changeStation:
+    handler: handler.change_station
     events:
       - http:
-          path: submit-pwd
+          path: stream-url
           method: post
           cors: true
-  closeDoor:
-    handler: handler.close_door
 
 plugins:
   - serverless-finch
 
 custom:
   client:
-    bucketName: gather-test
+    bucketName: gather-radio

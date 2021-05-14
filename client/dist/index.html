@@ -1,209 +1,160 @@
-<style>
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  background: #004170;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 16px;
-}
-
-body {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-wrap: wrap;
-      -ms-flex-wrap: wrap;
-          flex-wrap: wrap;
-  -webkit-justify-content: space-around;
-      -ms-flex-pack: distribute;
-          justify-content: space-around;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-align-content: center;
-      -ms-flex-line-pack: center;
-          align-content: center;
-}
-.btn {
-  box-sizing: border-box;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
-  background-color: transparent;
-  border: 2px solid #e74c3c;
-  border-radius: 0.6em;
-  color: #e74c3c;
-  cursor: pointer;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-self: center;
-      -ms-flex-item-align: center;
-          align-self: center;
-  justify-content: center;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1;
-  margin: 20px;
-  padding: 2.8em 2.8em;
-  text-decoration: none;
-  text-align: center;
-  text-transform: uppercase;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-}
-.btn:hover, .btn:focus {
-  color: #fff;
-  outline: 0;
-}
-
-.message {
-  color: #fff;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-align-self: center;
-      -ms-flex-item-align: center;
-          align-self: center;
-  justify-content: center;
-  font-size: 2rem;
-  font-weight: 400;
-  line-height: 1;
-  margin: 20px;
-  padding: 1.2em 2.8em;
-  text-decoration: none;
-  text-align: center;
-  text-transform: uppercase;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-}
-
-.btn {
-  border-color: #fff;
-  color: #fff;
-  background-image: -webkit-linear-gradient(45deg, #fff 50%, transparent 50%);
-  background-image: linear-gradient(45deg, #fff 50%, transparent 50%);
-  background-position: 100%;
-  background-size: 400%;
-  -webkit-transition: background 300ms ease-in-out;
-  transition: background 300ms ease-in-out;
-}
-.btn:hover {
-  background-position: 0;
-  color: #004170;
-}
-
-.digits {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
-  gap: 0px 0px;
-  grid-template-areas:
-    "message message message"
-    ". . ."
-    ". . ."
-    ". . ."
-    "cancel . submit";
-}
-
-.message { grid-area: message; }
-.cancel {
-  grid-area: cancel;
-  color: 'indianred';
-}
-.submit {
-  grid-area: submit;
-  color: 'lime';
-}
-
-p, a {
-  text-align: center;
-  color: #fff;
-}
-
-</style>
-
-<div id="app">
-  <p style="padding-top: 20px">Example for changing Gather objects and impassable tiles via api. When the door opens, you have 5 seconds, so hurry up! <a href="https://github.com/silvester-pari/gather-api">Code repo</a></p>
-  <div class="digits">
-    <div class="message">{{ message }}</div>
-    <template v-if="!success">
-      <button class="btn digit" @click="addDigit(1)">1</button>
-      <button class="btn digit" @click="addDigit(2)">2</button>
-      <button class="btn digit" @click="addDigit(3)">3</button>
-      <button class="btn digit" @click="addDigit(4)">4</button>
-      <button class="btn digit" @click="addDigit(5)">5</button>
-      <button class="btn digit" @click="addDigit(6)">6</button>
-      <button class="btn digit" @click="addDigit(7)">7</button>
-      <button class="btn digit" @click="addDigit(8)">8</button>
-      <button class="btn digit" @click="addDigit(9)">9</button>
-      <button class="btn digit" @click="addDigit(0)">0</button>
-      <button class="btn cancel" @click="cancel">x</button>
-      <button class="btn submit" @click="checkPwd">Submit</button>
-    </template>
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+</head>
+<body>
+  <div id="app">
+    <v-app>
+      <div class="d-flex flex-column" style="height: 100vh">
+        <v-main class="flex-grow-0">
+          <v-container>
+            <v-row>
+              <v-col
+                cols="12">
+                <h1>Change radio station</h1>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="9"
+              >
+                <v-text-field
+                  label="Stream url"
+                  v-model="streamUrl"
+                  append-outer-icon="mdi-help-circle"
+                  @click:append-outer="showHint = !showHint"
+                ></v-text-field>
+              </v-col>
+              <v-col v-if="showHint" cols="12">
+                <p>Hint: if you want to use InternetRadio (iFrame below):</p>
+                <ul>
+                  <li>Browse to a radio station that you like</li>
+                  <li>Open developer tools (right clik -> inspect)</li>
+                  <li>Search the HTML code for <code>stream1 = {</code> and copy the full mp3/m4a url (including <code>;</code>!)</li>
+                  <li>Copy and paste the returned url to the input above</li>
+                </ul>
+                <p>Besides InternetRadio, you can use any other direct stream url.</p>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  label="Jukebox volume"
+                  v-model="jukeBoxVolume"
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  label="Jukebox sound distance"
+                  v-model="jukeBoxMaxDistance"
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-btn
+                  :loading="loading"
+                  @click="setStream"
+                >
+                  <v-icon left>mdi-check</v-icon>
+                  update stream
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row v-if="error || success">
+              <v-col v-if="error">
+                <p class="error--text">{{ error }}</p>
+              </v-col>
+              <v-col v-if="success">
+                <p class="success--text">{{ success }}</p>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-main>
+        <iframe
+          id="radioIframe"
+          src="https://www.internet-radio.com"
+          frameborder="0"
+          width="100%"
+          class="flex-grow-1"
+        ></iframe>
+      </div>
+    </v-app>
   </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="./hint.js"></script>
-<script>
-var app = new Vue({
-  el: '#app',
-  data: {
-    error: '',
-    success: '',
-    password: '',
-  },
-  computed: {
-    message() {
-      let message = this.password;
-      if (this.password.length === 0) {
-        message = `Enter password (Hint: ${passwordHint})`;
-      }
-      if (this.error) {
-        message = this.error;
-      }
-      if (this.success) {
-        message = this.success;
-      }
-      return message;
-    },
-  },
-  methods: {
-    addDigit(digit) {
-      this.error = '';
-      this.success = '';
-      if (this.password.length < 5) {
-        this.password = this.password.toString() + digit;
-      }
-    },
-    cancel() {
-      this.error = '';
-      this.success = '';
-      this.password = '';
-    },
-    async checkPwd() {
-      this.error = '';
-      this.success = '';
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="./api.js"></script>
+  <script>
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      data: () => ({
+        streamUrl: null,
+        loading: false,
+        showHint: false,
+        success: null,
+        error: null,
+        jukeBoxId: null,
+        jukeBoxVolume: 0.5,
+        jukeBoxMaxDistance: 5,
+      }),
+      created() {
+        this.jukeBoxId = this.getQueryParams(window.location.href).id;
+        if (!this.jukeBoxId) {
+          this.error = "No Jukebox Id set!";
+        }
+      },
+      methods: {
+        async setStream() {
+          this.loading = true;
+          const response = await axios.post(apiDeployment, {
+            id: this.jukeBoxId,
+            src: this.streamUrl,
+            volume: this.jukeBoxVolume,
+            maxDistance: this.jukeBoxMaxDistance
+          })
+          .catch((error) => {
+            this.error = error.response ? error.response.data.message : 'Access Error';
+            this.streamUrl = '';
+            this.loading = false;
+          });
+          if (response.status === 200) {
+            this.success = response.data.message;
+            this.loading = false;
+          }
+        },
+        getQueryParams(url) {
+          let queryParams = {};
+          //create an anchor tag to use the property called search
+          let anchor = document.createElement('a');
+          //assigning url to href of anchor tag
+          anchor.href = url;
+          //search property returns the query string of url
+          let queryStrings = anchor.search.substring(1);
+          let params = queryStrings.split('&');
 
-      const response = await axios.post('https://zerfyo6lf3.execute-api.eu-central-1.amazonaws.com/dev/submit-pwd', {
-        password: this.password,
-      })
-      .catch((error) => {
-        this.error = error.response ? error.response.data.message : 'Access Error';
-        this.password = '';
-      });
-      if (response.status === 200) {
-        this.success = response.data.message;
-      }
-    }
-  }
-})
-</script>
+          for (var i = 0; i < params.length; i++) {
+              var pair = params[i].split('=');
+              queryParams[pair[0]] = decodeURIComponent(pair[1]);
+          }
+          return queryParams;
+        }
+      },
+    })
+  </script>
+</body>
+</html>
