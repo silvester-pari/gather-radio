@@ -9,88 +9,92 @@
 <body>
   <div id="app">
     <v-app>
-      <div class="d-flex flex-column" style="height: 100vh">
-        <v-main class="flex-grow-0">
-          <v-container>
-            <v-row>
-              <v-col
-                cols="12">
-                <h1>Change radio station</h1>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="9"
+      <v-main>
+        <v-container>
+          <v-row>
+            <v-col
+              cols="12">
+              <h1>Update radio stream</h1>
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+            >
+              <v-text-field
+                label="Stream url"
+                v-model="jukeBoxSrc"
+                @input="touched = true"
+              ></v-text-field>
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              md="3"
+            >
+              <v-text-field
+                label="Jukebox volume"
+                v-model="jukeBoxVolume"
+                @input="touched = true"
+              ></v-text-field>
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              md="3"
+            >
+              <v-text-field
+                label="Jukebox sound distance"
+                v-model="jukeBoxMaxDistance"
+                @input="touched = true"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="12" sm="6" class="d-flex align-center">
+              <p class="error--text">{{ error }}</p>
+              <p class="success--text">{{ success }}</p>
+            </v-col>
+            <v-col
+              cols="12"
+              sm="6"
+              class="text-right"
+            >
+              <v-btn
+                :loading="loading"
+                color="success"
+                :disabled="!touched"
+                :block="$vuetify.breakpoint.xsOnly"
+                @click="setStream"
               >
-                <v-text-field
-                  label="Stream url"
-                  v-model="jukeBoxSrc"
-                  append-outer-icon="mdi-help-circle"
-                  @click:append-outer="showHint = !showHint"
-                ></v-text-field>
-              </v-col>
-              <v-col v-if="showHint" cols="12">
-                <p>Hint: if you want to use InternetRadio (iFrame below):</p>
-                <ul>
-                  <li>Browse to a radio station that you like</li>
-                  <li>Open developer tools (right clik -> inspect)</li>
-                  <li>Search the HTML code for <code>stream1 = {</code> and copy the full mp3/m4a url (including <code>;</code>!)</li>
-                  <li>Copy and paste the returned url to the input above</li>
-                </ul>
-                <p>Besides InternetRadio, you can use any other direct stream url.</p>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <v-text-field
-                  label="Jukebox volume"
-                  v-model="jukeBoxVolume"
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <v-text-field
-                  label="Jukebox sound distance"
-                  v-model="jukeBoxMaxDistance"
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="4"
-              >
-                <v-btn
-                  :loading="loading"
-                  @click="setStream"
-                >
-                  <v-icon left>mdi-check</v-icon>
-                  update stream
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row v-if="error || success">
-              <v-col v-if="error">
-                <p class="error--text">{{ error }}</p>
-              </v-col>
-              <v-col v-if="success">
-                <p class="success--text">{{ success }}</p>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-main>
-        <iframe
-          id="radioIframe"
-          src="https://www.internet-radio.com"
-          frameborder="0"
-          width="100%"
-          class="flex-grow-1"
-        ></iframe>
-      </div>
+                <v-icon left>mdi-check</v-icon>
+                update stream
+              </v-btn>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-expansion-panels v-model="panel" multiple>
+                <v-expansion-panel>
+                  <v-expansion-panel-header>
+                    <strong>Guide: internet-radio.com</strong>
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <ul>
+                      <li>Browse to a radio station that you like on <a href="https://www.internet-radio.com" target="_blank">internet-radio.com</a></li>
+                      <li>Open developer tools (right clik -> inspect)</li>
+                      <li>Search the HTML code for <code>stream1 = {</code> and copy the full mp3/m4a url (including <code>;</code>!)</li>
+                      <li>Copy and paste the returned url to the input above</li>
+                    </ul>
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <small>This code is on <a href="https://github.com/silvester-pari/gather-radio" target="_blank">GitHub</a>. Feel free to suggest changes!</small>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-main>
     </v-app>
   </div>
 
@@ -104,9 +108,10 @@
       vuetify: new Vuetify(),
       data: () => ({
         loading: false,
-        showHint: false,
         success: null,
         error: null,
+        panel: [0],
+        touched: false,
         jukeBoxSrc: null,
         jukeBoxId: null,
         jukeBoxVolume: 0.5,
@@ -115,7 +120,7 @@
       created() {
         this.jukeBoxId = this.getQueryParams(window.location.href).id;
         if (!this.jukeBoxId) {
-          this.error = "No Jukebox Id set!";
+          this.error = "Error: No Jukebox Id set!";
         }
         this.getStream();
       },
