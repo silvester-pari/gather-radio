@@ -47,3 +47,4 @@ Create a jukebox with an embedded website. Use your s3 deployment url and add an
 ```
 https://<bucket-name>.s3.eu-central-1.amazonaws.com/index.html?id=<unique id>
 ```
+When using the same id for multiple Jukeboxes, all of them are updated with the next update!
