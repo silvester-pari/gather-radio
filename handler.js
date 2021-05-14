@@ -29,7 +29,7 @@ const setMap = async (mapData) => {
   return response.data;
 };
 
-const replaceSoundSrc = (mapData, id, src, volume = 1, maxDistance = 5) => {
+const replaceSoundSrc = (mapData, id, src, volume = 0.5, maxDistance = 5) => {
   let newMapData = mapData;
   // Find the door object and change its image and store the old object
   for (let idx = 0; idx < mapData.objects.length; idx++) {
@@ -53,6 +53,18 @@ const replaceSoundSrc = (mapData, id, src, volume = 1, maxDistance = 5) => {
   return newMapData;
 }
 
+const getSoundObject = (mapData, id) => {
+  let soundObject;
+  // Find the door object and change its image and store the old object
+  for (let idx = 0; idx < mapData.objects.length; idx++) {
+    const object = mapData.objects[idx];
+    if (object.properties.url && getQueryParams(object.properties.url).id[0] === id) {
+      soundObject = mapData.objects[idx].sound;
+    }
+  }
+  return soundObject;
+}
+
 const getQueryParams = (str) => {
   var queryString = str || window.location.search || '';
   var keyValPairs = [];
@@ -74,12 +86,11 @@ const getQueryParams = (str) => {
   return params;
 }
 
-module.exports.change_station = (event, context, callback) => {
+module.exports.stream_url = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   const body = JSON.parse(event.body);
-  console.log(body.id);
-  console.log(body.src);
+  const parameters = event.queryStringParameters;
 
   const sendResponse = (message, status = 200) => {
     const response = {
@@ -96,6 +107,17 @@ module.exports.change_station = (event, context, callback) => {
     callback(null, response);
   };
 
+  if (event.httpMethod === 'GET') {
+    if (!parameters.id) {
+      sendResponse('Jukebox id missing!', 403);
+      return;
+    }
+    getMap().then((currentMap) => {
+      const soundObject = getSoundObject(currentMap, parameters.id);
+      sendResponse(soundObject);
+    });
+    return;
+  }
   if (!body.id) {
     sendResponse('Jukebox id missing!', 403);
     return;

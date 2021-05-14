@@ -24,7 +24,7 @@
               >
                 <v-text-field
                   label="Stream url"
-                  v-model="streamUrl"
+                  v-model="jukeBoxSrc"
                   append-outer-icon="mdi-help-circle"
                   @click:append-outer="showHint = !showHint"
                 ></v-text-field>
@@ -103,11 +103,11 @@
       el: '#app',
       vuetify: new Vuetify(),
       data: () => ({
-        streamUrl: null,
         loading: false,
         showHint: false,
         success: null,
         error: null,
+        jukeBoxSrc: null,
         jukeBoxId: null,
         jukeBoxVolume: 0.5,
         jukeBoxMaxDistance: 5,
@@ -117,19 +117,38 @@
         if (!this.jukeBoxId) {
           this.error = "No Jukebox Id set!";
         }
+        this.getStream();
       },
       methods: {
+        async getStream() {
+          this.loading = true;
+          const response = await axios.get(`${apiDeployment}?id=${this.jukeBoxId}`)
+          .catch((error) => {
+            this.error = error.response ? error.response.data.message : 'Access Error';
+            this.jukeBoxSrc = '';
+            this.loading = false;
+          });
+          if (response.status === 200) {
+            const soundObject = response.data.message;
+            if (soundObject) {
+              this.jukeBoxSrc = soundObject.src;
+              this.jukeBoxVolume = soundObject.volume;
+              this.jukeBoxMaxDistance = soundObject.maxDistance;
+            }
+            this.loading = false;
+          }
+        },
         async setStream() {
           this.loading = true;
           const response = await axios.post(apiDeployment, {
             id: this.jukeBoxId,
-            src: this.streamUrl,
+            src: this.jukeBoxSrc,
             volume: this.jukeBoxVolume,
             maxDistance: this.jukeBoxMaxDistance
           })
           .catch((error) => {
             this.error = error.response ? error.response.data.message : 'Access Error';
-            this.streamUrl = '';
+            this.jukeBoxSrc = '';
             this.loading = false;
           });
           if (response.status === 200) {

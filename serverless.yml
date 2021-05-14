@@ -13,12 +13,16 @@ provider:
       Resource: "*"
 
 functions:
-  changeStation:
-    handler: handler.change_station
+  streamUrl:
+    handler: handler.stream_url
     events:
       - http:
           path: stream-url
           method: post
+          cors: true
+      - http:
+          path: stream-url
+          method: get
           cors: true
 
 plugins:
