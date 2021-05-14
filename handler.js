@@ -1,10 +1,5 @@
 'use strict';
 const axios = require('axios');
-const AWS = require("aws-sdk");
-
-const lambda = new AWS.Lambda({
-  region: "eu-central-1"
-});
 
 const { ROOM_ID, MAP_ID, API_KEY } = require("./config");
 
@@ -31,7 +26,6 @@ const setMap = async (mapData) => {
 
 const replaceSoundSrc = (mapData, id, src, volume = 0.5, maxDistance = 5) => {
   let newMapData = mapData;
-  // Find the door object and change its image and store the old object
   for (let idx = 0; idx < mapData.objects.length; idx++) {
     const object = mapData.objects[idx];
     if (object.properties.url && getQueryParams(object.properties.url).id[0] === id) {
@@ -55,7 +49,6 @@ const replaceSoundSrc = (mapData, id, src, volume = 0.5, maxDistance = 5) => {
 
 const getSoundObject = (mapData, id) => {
   let soundObject;
-  // Find the door object and change its image and store the old object
   for (let idx = 0; idx < mapData.objects.length; idx++) {
     const object = mapData.objects[idx];
     if (object.properties.url && getQueryParams(object.properties.url).id[0] === id) {
